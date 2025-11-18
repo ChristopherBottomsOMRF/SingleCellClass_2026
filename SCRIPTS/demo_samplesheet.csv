@@ -1,0 +1,7 @@
+Fastq_ID,group,replicate
+SRX9751508,keloid,1
+SRX9751509,keloid,2
+SRX9751510,keloid,3
+SRX9751511,normal_scar,1
+SRX9751512,normal_scar,2
+SRX9751513,normal_scar,3
