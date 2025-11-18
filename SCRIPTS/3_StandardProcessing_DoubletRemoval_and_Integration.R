@@ -39,7 +39,7 @@ obj[["RNA"]] <- split(obj[["RNA"]], f = obj$sample)
 # This will be run again after doublet removal.
 obj[["Data"]] <- NULL
 obj <- obj %>%
-        NormalizeData() %>% # no need to redo "cell-level" normalization
+        NormalizeData() %>% # why do we need to do this again? This is "cell-level" normalization, after all.
         FindVariableFeatures(selection.method = "vst", nfeatures = 3000) %>% # Redo since some variance lost to filtering
         ScaleData(features = row.names(.)) %>%                               # ditto
         RunPCA( reduction.name = "pca.filtered") %>%
@@ -83,7 +83,6 @@ message("Find clusters after removing doublets")
 
 # Now we reprocess the data (because it's different now)
 obj <- obj %>%
-  # NormalizeData() %>% # No need to renormalize on cell level....
   FindVariableFeatures(selection.method = "vst", nfeatures = 3000) %>% # Refind variable features since some variableness may be lost with doublet removal
   ScaleData(features = row.names(.)) %>%                               # Recale features for the same reason
   RunPCA(reduction.name = "pca.doublets_removed") %>%
@@ -112,11 +111,13 @@ obj <- IntegrateLayers(object = obj,
 
 obj <- JoinLayers(obj)
 
-# Now we reprocess the data (because it's different now)
+# Now find clusters on integrated data (two ways)
 obj <- obj %>%
   FindNeighbors(reduction = "harmony", dims = 1:30) %>%
   FindClusters(resolution = 0.4, cluster.name = "clusters.harmony") %>%
-  RunUMAP(reduction = "cca",     dims = 1:30, reduction.name = "umap.cca") %>%
-  RunUMAP(reduction = "harmony", dims = 1:30, reduction.name = "umap.harmony")
+  RunUMAP(reduction = "harmony", dims = 1:30, reduction.name = "umap.harmony") %>%
+  FindNeighbors(reduction = "cca", dims = 1:30) %>%
+  FindClusters(resolution = 0.4, cluster.name = "clusters.cca") %>%
+  RunUMAP(reduction = "cca",     dims = 1:30, reduction.name = "umap.cca")
 
 saveRDS(obj, "DoubletsRemoved_filtered_integrated.rds")
