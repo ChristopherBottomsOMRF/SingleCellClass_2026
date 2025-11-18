@@ -21,7 +21,9 @@ set -o pipefail # If a pipe fails, returns the error code for the failed pipe
 
 module load R/4.5.1-mkl seurat/5.3
 
-1_create_prefiltered_merged_seurat_obj.R
+samplesheet=${1?Samplesheet CSV file name required}
+
+1_create_prefiltered_merged_seurat_obj.R $samplesheet
 2_select_filter_thresholds.R
 3_StandardProcessing_DoubletRemoval_and_Integration.R
 4_Plot_integrations.R

@@ -2,10 +2,14 @@
 #SBATCH --cpus-per-task 5
 #SBATCH --mem-per-cpu 4G
 
+args <- commandArgs(trailingOnly = TRUE)
+
+samplesheet <- args[1]
+
 library(Seurat)
 
 # Read in CSV file (expecting columns: Fastq_ID,group,replicate)
-id_groups <- read.csv("samplesheet.csv")
+id_groups <- read.csv(samplesheet)
 
 # Create sample name by a combination of group and replicate
 id_groups$sample=paste0(id_groups$group,"_",id_groups$replicate)
